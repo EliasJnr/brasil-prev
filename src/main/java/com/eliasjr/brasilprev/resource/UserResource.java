@@ -1,5 +1,8 @@
 package com.eliasjr.brasilprev.resource;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,7 @@ import com.eliasjr.brasilprev.dto.UserUpdateRoledto;
 import com.eliasjr.brasilprev.dto.UserUpdatedto;
 import com.eliasjr.brasilprev.model.PageModel;
 import com.eliasjr.brasilprev.model.PageRequestModel;
+import com.eliasjr.brasilprev.security.JwtManager;
 import com.eliasjr.brasilprev.service.UserService;
 
 @RestController
@@ -37,6 +41,9 @@ public class UserResource {
 
 	@Autowired
 	private AuthenticationManager authManager;
+	
+	@Autowired
+	private JwtManager jwtManager;
 
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody @Valid UserSavedto userdto) {
@@ -67,12 +74,21 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody @Valid UserLogindto user) {
+	public ResponseEntity<String> login(@RequestBody @Valid UserLogindto user) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
 				user.getPassword());
 		Authentication auth = authManager.authenticate(token);
 		SecurityContextHolder.getContext().setAuthentication(auth);
-		return ResponseEntity.ok(null);
+
+		org.springframework.security.core.userdetails.User userSpring = (org.springframework.security.core.userdetails.User) auth
+				.getPrincipal();
+		String email = userSpring.getUsername();
+		List<String> roles = userSpring.getAuthorities().stream().map(authority -> authority.getAuthority())
+				.collect(Collectors.toList());
+		
+		String jwt = jwtManager.createToken(email, roles);
+		
+		return ResponseEntity.ok(jwt);
 	}
 
 	@PatchMapping("/role/{id}")
