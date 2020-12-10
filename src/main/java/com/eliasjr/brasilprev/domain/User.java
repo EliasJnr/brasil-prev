@@ -1,5 +1,7 @@
 package com.eliasjr.brasilprev.domain;
 
+import com.eliasjr.brasilprev.domain.enums.Role;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,4 +18,5 @@ public class User {
 	private String address;
 	private String email;
 	private String password;
+	private Role role;
 }
