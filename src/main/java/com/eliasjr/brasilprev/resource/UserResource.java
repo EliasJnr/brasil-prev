@@ -1,6 +1,6 @@
 package com.eliasjr.brasilprev.resource;
 
-import java.util.List;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.eliasjr.brasilprev.domain.User;
 import com.eliasjr.brasilprev.dto.UserLogindto;
+import com.eliasjr.brasilprev.dto.UserSavedto;
+import com.eliasjr.brasilprev.dto.UserUpdatedto;
 import com.eliasjr.brasilprev.model.PageModel;
 import com.eliasjr.brasilprev.model.PageRequestModel;
 import com.eliasjr.brasilprev.service.UserService;
@@ -28,13 +30,14 @@ public class UserResource {
 	private UserService userService;
 
 	@PostMapping
-	public ResponseEntity<User> save(@RequestBody User user) {
-		User createdUser = userService.save(user);
+	public ResponseEntity<User> save(@RequestBody @Valid UserSavedto userdto) {
+		User createdUser = userService.save(userdto.transformToUser());
 		return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<User> update(@PathVariable(name = "id") Long id, @RequestBody User user) {
+	public ResponseEntity<User> update(@PathVariable(name = "id") Long id, @Valid @RequestBody UserUpdatedto userdto) {
+		User user = userdto.transformToUser();
 		user.setId(id);
 		User updatedUser = userService.update(user);
 		return ResponseEntity.status(HttpStatus.OK).body(updatedUser);
@@ -55,8 +58,9 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<User> login(@RequestBody UserLogindto user) {
+	public ResponseEntity<User> login(@RequestBody @Valid UserLogindto user) {
 		User loggedUser = userService.login(user.getEmail(), user.getPassword());
 		return ResponseEntity.ok(loggedUser);
 	}
+
 }
