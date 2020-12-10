@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eliasjr.brasilprev.domain.User;
 import com.eliasjr.brasilprev.dto.UserLogindto;
 import com.eliasjr.brasilprev.dto.UserSavedto;
+import com.eliasjr.brasilprev.dto.UserUpdateRoledto;
 import com.eliasjr.brasilprev.dto.UserUpdatedto;
 import com.eliasjr.brasilprev.model.PageModel;
 import com.eliasjr.brasilprev.model.PageRequestModel;
@@ -61,6 +63,17 @@ public class UserResource {
 	public ResponseEntity<User> login(@RequestBody @Valid UserLogindto user) {
 		User loggedUser = userService.login(user.getEmail(), user.getPassword());
 		return ResponseEntity.ok(loggedUser);
+	}
+
+	@PatchMapping("/role/{id}")
+	public ResponseEntity<?> updateRole(@PathVariable(name = "id") Long id, @RequestBody UserUpdateRoledto userdto) {
+		User user = new User();
+		user.setId(id);
+		user.setRole(userdto.getRole());
+
+		userService.updateRole(user);
+
+		return ResponseEntity.ok().build();
 	}
 
 }

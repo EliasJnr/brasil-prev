@@ -23,13 +23,19 @@ public class UserService {
 	private UserRepository userRepository;
 
 	public User save(User user) {
-		user.setPassword(HashUtil.getSecureHash(user.getPassword()));
-		return userRepository.save(user);
+		String hash = HashUtil.getSecureHash(user.getPassword());
+		user.setPassword(hash);
+
+		User createdUser = userRepository.save(user);
+		return createdUser;
 	}
 
 	public User update(User user) {
-		user.setPassword(HashUtil.getSecureHash(user.getPassword()));
-		return userRepository.save(user);
+		String hash = HashUtil.getSecureHash(user.getPassword());
+		user.setPassword(hash);
+
+		User updatedUser = userRepository.save(user);
+		return updatedUser;
 	}
 
 	public User getById(Long id) {
@@ -38,21 +44,25 @@ public class UserService {
 	}
 
 	public List<User> listAll() {
-		return userRepository.findAll();
+		List<User> users = userRepository.findAll();
+		return users;
 	}
 
 	public PageModel<User> listAllOnLazyMode(PageRequestModel pr) {
 		Pageable pageable = PageRequest.of(pr.getPage(), pr.getSize());
 		Page<User> page = userRepository.findAll(pageable);
-		PageModel<User> pm = new PageModel<>((int) page.getTotalElements(), page.getSize(), page.getTotalPages(),
-				page.getContent());
-		return pm;
+
+		return new PageModel<>((int) page.getTotalElements(), page.getSize(), page.getTotalPages(), page.getContent());
 	}
 
 	public User login(String email, String password) {
 		password = HashUtil.getSecureHash(password);
 		Optional<User> result = userRepository.login(email, password);
 		return result.orElseThrow(() -> new NotFoundException("There are not user foud"));
+	}
+
+	public int updateRole(User user) {
+		return userRepository.updateRole(user.getId(), user.getRole());
 	}
 
 }
