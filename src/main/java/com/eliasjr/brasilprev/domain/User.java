@@ -11,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.eliasjr.brasilprev.domain.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -46,6 +48,8 @@ public class User implements Serializable {
 	private String email;
 
 	@Column(length = 100, nullable = false)
+	@Getter(onMethod = @__({ @JsonIgnore }))
+	@Setter(onMethod = @__({ @JsonProperty }))
 	private String password;
 
 	@Column(length = 20, nullable = false, updatable = false)
