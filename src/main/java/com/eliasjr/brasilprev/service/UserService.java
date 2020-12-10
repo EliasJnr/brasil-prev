@@ -79,7 +79,7 @@ public class UserService implements UserDetailsService {
 			throw new UsernameNotFoundException("Dosen't exist user with email = " + username);
 
 		User user = result.get();
-		List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE " + user.getRole().name()));
+		List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 		org.springframework.security.core.userdetails.User userSpring = new org.springframework.security.core.userdetails.User(
 				user.getEmail(), user.getPassword(), authorities);
 
