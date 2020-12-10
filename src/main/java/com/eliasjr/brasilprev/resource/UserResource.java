@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eliasjr.brasilprev.domain.User;
+import com.eliasjr.brasilprev.dto.UserLoginResponsedto;
 import com.eliasjr.brasilprev.dto.UserLogindto;
 import com.eliasjr.brasilprev.dto.UserSavedto;
 import com.eliasjr.brasilprev.dto.UserUpdateRoledto;
@@ -41,7 +42,7 @@ public class UserResource {
 
 	@Autowired
 	private AuthenticationManager authManager;
-	
+
 	@Autowired
 	private JwtManager jwtManager;
 
@@ -74,7 +75,7 @@ public class UserResource {
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<String> login(@RequestBody @Valid UserLogindto user) {
+	public ResponseEntity<UserLoginResponsedto> login(@RequestBody @Valid UserLogindto user) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(user.getEmail(),
 				user.getPassword());
 		Authentication auth = authManager.authenticate(token);
@@ -85,10 +86,8 @@ public class UserResource {
 		String email = userSpring.getUsername();
 		List<String> roles = userSpring.getAuthorities().stream().map(authority -> authority.getAuthority())
 				.collect(Collectors.toList());
-		
-		String jwt = jwtManager.createToken(email, roles);
-		
-		return ResponseEntity.ok(jwt);
+
+		return ResponseEntity.ok(jwtManager.createToken(email, roles));
 	}
 
 	@PatchMapping("/role/{id}")
