@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 import com.eliasjr.brasilprev.constant.SecurityConstants;
 import com.eliasjr.brasilprev.dto.UserLoginResponsedto;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -23,5 +25,10 @@ public class JwtManager {
 
 		Long expireIn = calendar.getTimeInMillis();
 		return new UserLoginResponsedto(jwt, expireIn, SecurityConstants.JWT_PROVIDER);
+	}
+
+	public Claims parseToken(String jwt) throws JwtException {
+		Claims claims = Jwts.parser().setSigningKey(SecurityConstants.API_KEY.getBytes()).parseClaimsJws(jwt).getBody();
+		return claims;
 	}
 }
