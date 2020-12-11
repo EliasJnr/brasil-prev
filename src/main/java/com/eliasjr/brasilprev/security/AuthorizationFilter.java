@@ -43,11 +43,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			String apiErrorString = mapper.writeValueAsString(apiError);
 
 			writer.write(apiErrorString);
+
 			response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
 			return;
 		}
+
 		jwt = jwt.replace(SecurityConstants.JWT_PROVIDER, "");
 
 		try {
@@ -55,12 +57,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			String email = claims.getSubject();
 			List<String> roles = (List<String>) claims.get(SecurityConstants.JWT_ROLE_KEY);
 
-			List<GrantedAuthority> granteAuthorities = new ArrayList<>();
+			List<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
 			roles.forEach(role -> {
-				granteAuthorities.add(new SimpleGrantedAuthority(role));
+				grantedAuthorities.add(new SimpleGrantedAuthority(role));
 			});
 
-			Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, granteAuthorities);
+			Authentication authentication = new UsernamePasswordAuthenticationToken(email, null, grantedAuthorities);
 
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -72,6 +74,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 			String apiErrorString = mapper.writeValueAsString(apiError);
 
 			writer.write(apiErrorString);
+
 			response.setContentType(MediaType.APPLICATION_JSON_UTF8_VALUE);
 			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 
@@ -79,6 +82,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 		}
 
 		filterChain.doFilter(request, response);
+
 	}
 
 }
